@@ -17,13 +17,13 @@ urls = [
     'https://ajkerdeal.com/'
 ]
 
-sm_sites = ['facebook.com']
+sm_sites = ['facebook.com','linkedin.com','twitter.com','instagram.com','youtube.com']
 sm_sites_present = []
 columns = ['url'] + sm_sites
 df = pd.DataFrame(data={'url' : urls}, columns=columns)
 
-def clear_link(link):
-    index = link.find('facebook.com')
+def clear_link(link,sm_site):
+    index = link.find(sm_site)
     if index == -1:
         return link
     else:  
@@ -44,16 +44,15 @@ def get_sm(row):
         for link in all_links:
             if sm_site in link.attrs['href']:
                 link = link.attrs['href']
-                link = clear_link(link)
+                link = clear_link(link,sm_site)
                 output[sm_site] = link
                 flag = True
 
-    if flag is False:
-        for i in search('facebook '+row['url'],  tld='com', lang='en', num=1, start=0, stop=1, pause=2.0):
-            output[sm_site] = i
+    # if flag is False:
+    #     for i in search('facebook '+row['url'],  tld='com', lang='en', num=1, start=0, stop=1, pause=2.0):
+    #         output[sm_site] = i
     return output
 
 sm_columns = df.apply(get_sm, axis=1)
 df.update(sm_columns)
 df.fillna(value='no link')
-print(df)
